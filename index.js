@@ -1,15 +1,45 @@
-﻿var canvas,
-      width,
-      height;
-      
-canvas = document.getElementById( "canvas" );
-height = canvas.height;
-width = canvas.width;
+﻿
+var greenBlock = document.getElementById( "greenBlock" );
+var redBlock = document.getElementById( "redBlock" );
+var yellowBlock = document.getElementById( "yellowBlock" );
+var blueBlock = document.getElementById( "blueBlock" );
+var startButton = document.getElementById( "startContainer" );
+var strictButton = document.getElementById( "strictContainer" );
 
-if( canvas.getContext ) {
-    var context = canvas.getContext( "2d" );
-} else {
-    console.log( "Your browser does not support canvas." );
+function greenBlockHandler( event ){
+   event.preventDefault();
+   console.log( "green button pressed..." );
 }
 
-context.fillRect( 0, 0, 100, 100)
+function redBlockHandler( event ){
+   event.preventDefault();
+   console.log( "red button pressed..." );
+
+}
+
+function yellowBlockHandler( event ){
+   event.preventDefault();
+   console.log( "yellow..." );
+}
+
+function blueBlockHandler( event ){
+   event.preventDefault();
+   console.log( "blue button pressed..." );
+}
+
+function startButtonHandler ( event ) {
+   event.preventDefault();
+   console.log( "Start button ..." );
+}
+
+function strictButtonHandler ( event ) {
+  event.preventDefault();
+  console.log( "strict button pressed... " );
+}
+
+greenBlock.addEventListener( "click", greenBlockHandler );
+redBlock.addEventListener( "click", redBlockHandler );
+yellowBlock.addEventListener( "click", yellowBlockHandler );
+blueBlock.addEventListener( "click", blueBlockHandler );
+startButton.addEventListener( "click", startButtonHandler );
+strictButton.addEventListener( "click", strictButtonHandler );

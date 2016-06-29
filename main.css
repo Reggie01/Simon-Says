@@ -216,14 +216,44 @@ fa { color: #ccc; }
   margin-top: 100px;
 }
 
-body {
-  background-color: #3B3A47;
-  padding: 0;
-  margin: 0;
-  border: 0;
-  }
 
+.simonButtons {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+}
+  
+.red {
+  background-color: red;
+}
+  
+.blue {
+  background-color: blue;
+}
+  
+.green {
+  background-color: green;
+}
+  
+.yellow{
+  background-color: yellow;
+}
 
+.menu{
+  display: inline-block;
+  height: 50px;
+  width: 50px;
+}
+
+.start {
+  background-color: green;
+  border-radius: 50%;
+}
+
+.strict {
+  background-color: yellow;
+  border-radius: 50%;
+}
 /* 5. Media Queries
 ------------------------------ */
 
