@@ -224,19 +224,19 @@ fa { color: #ccc; }
 }
   
 .red {
-  background-color: red;
+  background-color: #F44336; /* red 500 */
 }
   
 .blue {
-  background-color: blue;
+  background-color: #2196F3; /* blue 500 */
 }
   
 .green {
-  background-color: green;
+  background-color: #4CAF50; /* green 500 */
 }
   
 .yellow{
-  background-color: yellow;
+  background-color: #FFEB3B; /* yellow 500 */
 }
 
 .menu{
@@ -245,14 +245,41 @@ fa { color: #ccc; }
   width: 50px;
 }
 
-.start {
-  background-color: green;
+.menu-start {
+  background-color: #66BB6A; /* green 400 */
   border-radius: 50%;
+  border: 0;
+  opacity: .3;
 }
 
-.strict {
-  background-color: yellow;
-  border-radius: 50%;
+.menu-strict {
+    border: 0;
+    background-color: yellow;
+    border-radius: 50%;
+    opacity: .3;
+}
+
+.gameOnMenu{
+  display: inline-block;
+  height: 50px;
+}
+
+.gameOnMenu-on {
+  width: 50px;
+  border: 0;
+  background-color: #388E3C; /* green 700 */
+  opacity: .3;
+}
+
+.gameOnMenu-off {
+  width: 50px;
+  border: 0;
+  background-color: #212121; /* black 500 */
+  opacity: 1;
+}
+
+button:focus {
+    outline: 0;
 }
 /* 5. Media Queries
 ------------------------------ */
