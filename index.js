@@ -7,11 +7,14 @@ var startButton = document.getElementById( "startContainer" );
 var strictButton = document.getElementById( "strictContainer" );
 var onButton = document.getElementById( "on" );
 var offButton = document.getElementById( "off" );
+var countButton = document.getElementById( "countContainer" );
+var LOW_OPACITY = .3;
 
 var gameState = {
     isOn: false,
     isStart: false,
-    isStrict: false
+    isStrict: false, 
+    count: "--"
 }
 
 function greenBlockHandler( event ){
@@ -49,7 +52,12 @@ function onHandler ( event ) {
     if( !gameState.isOn ){
         gameState.isOn = true;
         onButton.style.opacity = 1; // Green A70
-        offButton.style.opacity = .3;   // Grey 900          
+        offButton.style.opacity = LOW_OPACITY;   // Grey 900 
+        if( countButton.textContent !== "--" ){
+            gameState.count = "--";
+            countButton.textContent = gameState.count;
+        }
+                
     } 
     console.log( JSON.stringify( gameState, null, 2 ) );
 }
@@ -60,11 +68,13 @@ function offHandler ( event ) {
     if( gameState.isOn ){
         gameState.isOn = false;
         offButton.style.opacity = 1;   // Black 500 
-        onButton.style.opacity = .3;  // Green 700
+        onButton.style.opacity = LOW_OPACITY;  // Green 700
         gameState.isStart = false;
-        startButton.style.opacity = .3;
+        startButton.style.opacity = LOW_OPACITY;
         gameState.isStrict = false;
-        strictButton.style.opacity = .3;
+        strictButton.style.opacity = LOW_OPACITY;
+        gameState.count = "";
+        countButton.textContent = gameState.count;
     }
     
     console.log( JSON.stringify( gameState, null, 2 ) );
@@ -78,18 +88,53 @@ function startButtonHandler ( event ) {
     } else if( gameState.isOn ){
         gameState.isStart = true;
         startButton.style.opacity = 1;
+        blinkCounter();
         console.log( "Start button ..." );
     }
     console.log( JSON.stringify( gameState, null, 2 ) );
 }
 
+function blinkCounter() {
+    
+    var count = 0;
+    var time = 300;
+    for ( count; count < 4; count++ ) {
+        
+        if( count % 2 === 0 ){
+            time += 300;
+        } else {
+          time += 300;
+        }
+        
+        window.setTimeout(function() {  
+            console.log( "Count: " + gameState.count );
+            if( gameState.count === "--") {
+               gameState.count = "";
+               countButton.style.opacity = 0;
+               // console.log( JSON.stringify( gameState, null, 2 ) );
+            } else {
+                gameState.count = "--";
+                countButton.style.opacity = 1;
+                // console.log( JSON.stringify( gameState, null, 2 ) );
+            } 
+
+                // countButton.textContent = gameState.count;    
+        }, time );
+        
+    }
+    
+}
+
 function strictButtonHandler ( event ) {
     event.preventDefault();
         
-    if( gameState.isOn && gameState.isStart ){ 
+    if( gameState.isOn && gameState.isStart && !gameState.isStrict ){ 
         gameState.isStrict = true;
         strictButton.style.opacity = 1;
         console.log( "strict button pressed... " );
+    } else if( gameState.isOn && gameState.isStart && gameState.isStrict ) {
+         gameState.isStrict = false;
+         strictButton.style.opacity = LOW_OPACITY;
     }
     
     console.log( JSON.stringify( gameState, null, 2 ) );
