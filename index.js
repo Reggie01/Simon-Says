@@ -9,12 +9,19 @@ var onButton = document.getElementById( "on" );
 var offButton = document.getElementById( "off" );
 var countButton = document.getElementById( "countContainer" );
 var LOW_OPACITY = .3;
+var GREEN = 1;
+var RED = 2;
+var BLUE = 3;
+var YELLOW = 4;
 
 var gameState = {
     isOn: false,
     isStart: false,
     isStrict: false, 
-    count: "--"
+    count: "--",
+    computerSequence: [],
+    userSequence: [],
+    isBlinking: false
 }
 
 function greenBlockHandler( event ){
@@ -82,13 +89,18 @@ function offHandler ( event ) {
 
 function startButtonHandler ( event ) {
     event.preventDefault();
+    var color;
     
     if( gameState.isOn && gameState.isStart ){
-        console.log( "resetting..." );     
+        console.log( "resetting..." );    
+        blinkCounter();        
     } else if( gameState.isOn ){
         gameState.isStart = true;
         startButton.style.opacity = 1;
         blinkCounter();
+        color = choseRandomColor();
+        gameState.computerSequence.push( color );
+        highlightButtons();
         console.log( "Start button ..." );
     }
     console.log( JSON.stringify( gameState, null, 2 ) );
@@ -98,29 +110,61 @@ function blinkCounter() {
     
     var count = 0;
     var time = 300;
-    for ( count; count < 4; count++ ) {
+    gameState.isBlinking = true;
+    
+    for ( count; count < 5; count++ ) {
         
         if( count % 2 === 0 ){
             time += 300;
         } else {
           time += 300;
         }
+        (function( count ) {
+            window.setTimeout(function() {  
+                console.log( "Count: " + gameState.count );
+                if( count === 4 ){
+                    gameState.count = 0;
+                    countButton.style.opacity = 0;
+                    countButton.textContent = 0;
+                    countButton.style.opacity = 1;
+                    gameState.isBlinking = false;
+                } else if( gameState.count === "--") {
+                   gameState.count = "";
+                   countButton.style.opacity = 0;
+                   countButton.textContent = gameState.count;
+                } else {
+                    gameState.count = "--";
+                    countButton.textContent = gameState.count;
+                    countButton.style.opacity = 1;                         
+                } 
+  
+            }, time );
+        })( count )
         
-        window.setTimeout(function() {  
-            console.log( "Count: " + gameState.count );
-            if( gameState.count === "--") {
-               gameState.count = "";
-               countButton.style.opacity = 0;
-               // console.log( JSON.stringify( gameState, null, 2 ) );
-            } else {
-                gameState.count = "--";
-                countButton.style.opacity = 1;
-                // console.log( JSON.stringify( gameState, null, 2 ) );
-            } 
+        
+    }
+    
+}
 
-                // countButton.textContent = gameState.count;    
-        }, time );
-        
+function choseRandomColor() {
+    var num = Math.random();
+    var color;
+    if( num >= .75 ) {
+         color = YELLOW;
+    } else if( num >= .5 ) {
+         color = BLUE;
+    } else if( num >= .25 ) {
+         color = RED;
+    } else {
+         color = GREEN;
+    }
+    
+    return color;
+}
+
+function highlightButtons() {
+    if( !gameState.isBlinking ) {
+        console.log( gameState.computerSequence );
     }
     
 }
