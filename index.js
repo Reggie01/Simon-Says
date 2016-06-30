@@ -21,7 +21,8 @@ var gameState = {
     count: "--",
     computerSequence: [],
     userSequence: [],
-    isBlinking: false
+    gamerId: null,
+    blinkTimer: null
 }
 
 function greenBlockHandler( event ){
@@ -82,6 +83,7 @@ function offHandler ( event ) {
         strictButton.style.opacity = LOW_OPACITY;
         gameState.count = "";
         countButton.textContent = gameState.count;
+        gameState.computerSequence = [];
     }
     
     console.log( JSON.stringify( gameState, null, 2 ) );
@@ -92,7 +94,11 @@ function startButtonHandler ( event ) {
     var color;
     
     if( gameState.isOn && gameState.isStart ){
-        console.log( "resetting..." );    
+        console.log( "resetting..." );
+        console.log( gameState.gamerId );
+         console.log( "Blink timer: " + gameState.blinkTimer );
+        gameState.computerSequence = [];
+        clearInterval( gameState.gamerId );        
         blinkCounter();        
     } else if( gameState.isOn ){
         gameState.isStart = true;
@@ -100,7 +106,7 @@ function startButtonHandler ( event ) {
         blinkCounter();
         color = choseRandomColor();
         gameState.computerSequence.push( color );
-        highlightButtons();
+        gameState.gamerId = setInterval( playGame, 300 );
         console.log( "Start button ..." );
     }
     console.log( JSON.stringify( gameState, null, 2 ) );
@@ -110,40 +116,35 @@ function blinkCounter() {
     
     var count = 0;
     var time = 300;
-    gameState.isBlinking = true;
+
+    gameState.blinkTimer = setInterval( updateCounter, 500 );    
+    setTimeout( stopUpdatingCounter, 2000 );
+        
+}
+
+function updateCounter() {
     
-    for ( count; count < 5; count++ ) {
-        
-        if( count % 2 === 0 ){
-            time += 300;
-        } else {
-          time += 300;
-        }
-        (function( count ) {
-            window.setTimeout(function() {  
-                console.log( "Count: " + gameState.count );
-                if( count === 4 ){
-                    gameState.count = 0;
-                    countButton.style.opacity = 0;
-                    countButton.textContent = 0;
-                    countButton.style.opacity = 1;
-                    gameState.isBlinking = false;
-                } else if( gameState.count === "--") {
-                   gameState.count = "";
-                   countButton.style.opacity = 0;
-                   countButton.textContent = gameState.count;
-                } else {
-                    gameState.count = "--";
-                    countButton.textContent = gameState.count;
-                    countButton.style.opacity = 1;                         
-                } 
-  
-            }, time );
-        })( count )
-        
-        
+    if( gameState.count === "--") {
+        gameState.count = "";
+        countButton.style.opacity = 0;
+        countButton.textContent = gameState.count;
+    } else {
+        gameState.count = "--";
+        countButton.textContent = gameState.count;
+        countButton.style.opacity = 1;                         
     }
+}
+
+function stopUpdatingCounter() {
+    console.log( gameState.blinkTimer );
+    clearInterval( gameState.blinkTimer );
+    console.log( gameState.blinkTimer );
+    gameState.count = 0;
+    countButton.style.opacity = 0;
+    countButton.textContent = 0;
+    countButton.style.opacity = 1;
     
+    console.log( "Blink timer: " + JSON.stringify( gameState.blinkTimer, null, 2 ) );
 }
 
 function choseRandomColor() {
@@ -162,10 +163,13 @@ function choseRandomColor() {
     return color;
 }
 
+function playGame() {
+    highlightButtons();
+}
+
 function highlightButtons() {
-    if( !gameState.isBlinking ) {
-        console.log( gameState.computerSequence );
-    }
+
+    console.log( gameState.computerSequence );
     
 }
 

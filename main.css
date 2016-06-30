@@ -243,6 +243,7 @@ fa { color: #ccc; }
   display: inline-block;
   height: 50px;
   width: 50px;
+  vertical-align: middle;
 }
 
 .menu-count {
@@ -266,6 +267,7 @@ fa { color: #ccc; }
 .gameOnMenu{
   display: inline-block;
   height: 50px;
+  vertical-align: middle;
 }
 
 .gameOnMenu-on {
