@@ -22,7 +22,8 @@ var gameState = {
     computerSequence: [],
     userSequence: [],
     gamerId: null,
-    blinkTimer: null
+    blinkTimer: null,
+    playerTurn: false
 }
 
 function greenBlockHandler( event ){
@@ -65,7 +66,7 @@ function onHandler ( event ) {
             gameState.count = "--";
             countButton.textContent = gameState.count;
         }
-                
+        gameState.playerTurn = false;       
     } 
     console.log( JSON.stringify( gameState, null, 2 ) );
 }
@@ -84,6 +85,11 @@ function offHandler ( event ) {
         gameState.count = "";
         countButton.textContent = gameState.count;
         gameState.computerSequence = [];
+        clearInterval( gameState.gamerId );
+        clearInterval( gameState.blinkTimer );
+        gameState.gamerId = 0;
+        gameState.blinkTimer = 0;
+        game.playerTurn = false;
     }
     
     console.log( JSON.stringify( gameState, null, 2 ) );
@@ -91,7 +97,6 @@ function offHandler ( event ) {
 
 function startButtonHandler ( event ) {
     event.preventDefault();
-    var color;
     
     if( gameState.isOn && gameState.isStart ){
         console.log( "resetting..." );
@@ -99,26 +104,27 @@ function startButtonHandler ( event ) {
          console.log( "Blink timer: " + gameState.blinkTimer );
         gameState.computerSequence = [];
         clearInterval( gameState.gamerId );        
-        blinkCounter();        
+        // blinkCounter();     
+                
     } else if( gameState.isOn ){
         gameState.isStart = true;
         startButton.style.opacity = 1;
-        blinkCounter();
-        color = choseRandomColor();
-        gameState.computerSequence.push( color );
-        gameState.gamerId = setInterval( playGame, 300 );
+        blinkCounter( playGame );
+ 
         console.log( "Start button ..." );
     }
     console.log( JSON.stringify( gameState, null, 2 ) );
 }
 
-function blinkCounter() {
+function blinkCounter( callback ) {
     
     var count = 0;
     var time = 300;
 
     gameState.blinkTimer = setInterval( updateCounter, 500 );    
-    setTimeout( stopUpdatingCounter, 2000 );
+    setTimeout( function() {
+        stopUpdatingCounter( callback );
+    }, 2000 );
         
 }
 
@@ -135,19 +141,30 @@ function updateCounter() {
     }
 }
 
-function stopUpdatingCounter() {
-    console.log( gameState.blinkTimer );
+function stopUpdatingCounter( callback ) {
+    var color;
+    
+
     clearInterval( gameState.blinkTimer );
-    console.log( gameState.blinkTimer );
+    gameState.blinkTimer = 0;
+    console.log( "Blink timer: " + gameState.blinkTimer );
     gameState.count = 0;
     countButton.style.opacity = 0;
     countButton.textContent = 0;
     countButton.style.opacity = 1;
     
-    console.log( "Blink timer: " + JSON.stringify( gameState.blinkTimer, null, 2 ) );
+    console.log( "Type of callback: " + typeof callback );
+    if( typeof callback === "function" ) {        
+        callback();
+    }
+    console.log( "Blink timer: " + JSON.stringify( gameState, null, 2 ) );
 }
 
-function choseRandomColor() {
+function playGame() {
+    gameState.gamerId = setInterval( startGame, 300 );
+}
+
+function chooseRandomColor() {
     var num = Math.random();
     var color;
     if( num >= .75 ) {
@@ -163,15 +180,80 @@ function choseRandomColor() {
     return color;
 }
 
-function playGame() {
-    highlightButtons();
-}
+function startGame() {
 
-function highlightButtons() {
-
-    console.log( gameState.computerSequence );
+    if( !gameState.playerTurn ) {
+        console.log( "I'm still running... " );
+        var color = chooseRandomColor();
+        gameState.computerSequence.push( color );
+        highlightButtons();
+    } else {
+        console.log( "player turn" );
+    }
     
 }
+
+
+function highlightButtons() {
+    
+    var len = gameState.computerSequence.length;
+    var count = 0;
+    var timeLapse = 2000;
+    var computerSequence = gameState.computerSequence.slice();
+    
+    gameState.computerSequenceCopy = computerSequence;
+    timeout( gameState.computerSequenceCopy );
+    console.log( gameState.computerSequence );
+    clearInterval( gameState.gamerId );
+    
+}
+
+function timeout( copy ) {
+    console.log( copy );
+    if( copy.length > 0 ){
+        setTimeout( function ()  {
+            var color = copy.shift();
+            changeColorOpacity( color );
+            timeout( gameState.computerSequenceCopy );
+        }, 1000 );
+    }
+    
+}
+
+function changeColorOpacity( color ) {
+    
+    console.log( "Color: "  + color );
+    console.log( "Color: " + gameState.computerSequence[color] );
+    
+    if( color === GREEN ){
+        greenBlock.style.opacity = .6;
+    } else if ( color === RED ) {
+        redBlock.style.opacity = .6;
+    } else if ( color === BLUE ) {
+        blueBlock.style.opacity = .6;
+    } else if ( color === YELLOW ) {
+        yellowBlock.style.opacity = .6;
+    } 
+    
+    setTimeout( function() {
+       changeButtonOpacityToOne( color );
+    }, 300);
+}
+
+function changeButtonOpacityToOne( color ) {
+       
+       if( color === GREEN ){
+           greenBlock.style.opacity = 1;
+       } else if ( color === RED ) {
+           redBlock.style.opacity = 1;
+       } else if ( color === BLUE ) {
+           blueBlock.style.opacity = 1;
+       } else if ( color === YELLOW ) {
+           yellowBlock.style.opacity = 1;
+       }
+       
+       console.log( "changing opacity back to one." );
+} 
 
 function strictButtonHandler ( event ) {
     event.preventDefault();
