@@ -20,38 +20,48 @@ var gameState = {
     isStrict: false, 
     count: "--",
     computerSequence: [],
+    computerSequenceCopy: [],
     userSequence: [],
     gamerId: null,
     blinkTimer: null,
-    playerTurn: false
+    playerTurn: false,
+    userChoicesCorrect: false
 }
 
 function greenBlockHandler( event ){
     event.preventDefault();
-    if( gameState.isOn && gameState.isStart ){
+    if( gameState.isOn && gameState.isStart && gameState.playerTurn ){
         console.log( "green button pressed..." );
+        changeColorOpacity( GREEN );
+        gameState.userSequence.push( GREEN );
     }
      
 }
 
 function redBlockHandler( event ){
     event.preventDefault();
-    if( gameState.isOn && gameState.isStart ){
-        console.log( "red button pressed..." );   
+    if( gameState.isOn && gameState.isStart && gameState.playerTurn ){
+        console.log( "red button pressed..." );  
+        changeColorOpacity( RED );        
+        gameState.userSequence.push( RED );
     }
 }
 
 function yellowBlockHandler( event ){
     event.preventDefault();
-    if( gameState.isOn && gameState.isStart ){
+    if( gameState.isOn && gameState.isStart && gameState.playerTurn ){
         console.log( "yellow..." );
+        changeColorOpacity( YELLOW );
+        gameState.userSequence.push( YELLOW );
     }
 }
 
 function blueBlockHandler( event ){
     event.preventDefault();
-    if( gameState.isOn && gameState.isStart ){
+    if( gameState.isOn && gameState.isStart && gameState.playerTurn ){
         console.log( "blue button pressed..." );
+        changeColorOpacity( BLUE );
+        gameState.userSequence.push( BLUE );
     }
 }
 
@@ -83,16 +93,28 @@ function offHandler ( event ) {
         gameState.isStrict = false;
         strictButton.style.opacity = LOW_OPACITY;
         gameState.count = "";
-        countButton.textContent = gameState.count;
-        gameState.computerSequence = [];
-        clearInterval( gameState.gamerId );
-        clearInterval( gameState.blinkTimer );
-        gameState.gamerId = 0;
-        gameState.blinkTimer = 0;
-        game.playerTurn = false;
+        countButton.textContent = gameState.count;        
+        clearTimers();
+        setGameStateToDefault();
+
     }
     
     console.log( JSON.stringify( gameState, null, 2 ) );
+}
+
+function clearTimers() {
+    
+    clearInterval( gameState.gamerId );
+    gameState.gamerId = 0;
+    clearInterval( gameState.blinkTimer );
+    gameState.gamerId = 0;
+}
+
+function setGameStateToDefault() {
+     gameState.computerSequence = [];
+     gameState.userSequence = [];
+     gameState.playerTurn = false;
+     gameState.userChoicesCorrect = false;
 }
 
 function startButtonHandler ( event ) {
@@ -100,11 +122,11 @@ function startButtonHandler ( event ) {
     
     if( gameState.isOn && gameState.isStart ){
         console.log( "resetting..." );
-        console.log( gameState.gamerId );
-         console.log( "Blink timer: " + gameState.blinkTimer );
-        gameState.computerSequence = [];
-        clearInterval( gameState.gamerId );        
-        // blinkCounter();     
+        
+        clearTimers();
+        setGameStateToDefault();
+        blinkCounter( playGame );
+        console.log( "Game state: " + JSON.stringify( gameState, null, 2 ) );    
                 
     } else if( gameState.isOn ){
         gameState.isStart = true;
@@ -121,14 +143,14 @@ function blinkCounter( callback ) {
     var count = 0;
     var time = 300;
 
-    gameState.blinkTimer = setInterval( updateCounter, 500 );    
+    gameState.blinkTimer = setInterval( setInitialCounter, 500 );    
     setTimeout( function() {
         stopUpdatingCounter( callback );
     }, 2000 );
         
 }
 
-function updateCounter() {
+function setInitialCounter() {
     
     if( gameState.count === "--") {
         gameState.count = "";
@@ -157,7 +179,7 @@ function stopUpdatingCounter( callback ) {
     if( typeof callback === "function" ) {        
         callback();
     }
-    console.log( "Blink timer: " + JSON.stringify( gameState, null, 2 ) );
+    console.log( "Update: " + JSON.stringify( gameState, null, 2 ) );
 }
 
 function playGame() {
@@ -184,35 +206,54 @@ function startGame() {
 
     if( !gameState.playerTurn ) {
         console.log( "I'm still running... " );
-        var color = chooseRandomColor();
-        gameState.computerSequence.push( color );
-        highlightButtons();
+        if( gameState.userChoicesCorrect ) {
+            if( gameState.computerSequence.length === 20 ) {
+                /* highlightButtons();
+                gameState.playerTurn = true; */
+                console.log( "game won..." );
+                // TODO: restart game
+            } else {
+                var color = chooseRandomColor();
+                gameState.computerSequence.push( color );
+                // TODO: create updateCounter function
+                updateCounter();
+                highlightButtons();
+                gameState.playerTurn = true;
+            }
+        } else {
+            // TODO: show response
+            highlightButtons();
+            gameState.playerTurn = true;       
+        }
+        
     } else {
+     
+        var playerTurnId
+        var userChoicesCorrect = compareUserSequenceToComputerSequence();       
+        gameState.userChoicesCorrect = userChoicesCorrect;
+        gameState.playerTurn = false;
         console.log( "player turn" );
     }
     
 }
 
-
 function highlightButtons() {
     
-    var len = gameState.computerSequence.length;
-    var count = 0;
-    var timeLapse = 2000;
     var computerSequence = gameState.computerSequence.slice();
     
     gameState.computerSequenceCopy = computerSequence;
     timeout( gameState.computerSequenceCopy );
-    console.log( gameState.computerSequence );
-    clearInterval( gameState.gamerId );
+    console.log( "gameState.computerSequence: " + JSON.stringify( gameState.computerSequence, null, 2 ) );
+    console.log( "gameState.computerSequenceCopy: " + JSON.stringify( gameState.computerSequenceCopy, null, 2 ) );
+    // clearInterval( gameState.gamerId );
     
 }
 
-function timeout( copy ) {
-    console.log( copy );
-    if( copy.length > 0 ){
+function timeout( computerSequence ) {
+    console.log( "Computer sequence: " + JSON.stringify( computerSequence, null, 2 ) );
+    if( computerSequence.length > 0 ){
         setTimeout( function ()  {
-            var color = copy.shift();
+            var color = computerSequence.shift();
             changeColorOpacity( color );
             timeout( gameState.computerSequenceCopy );
         }, 1000 );
@@ -253,7 +294,19 @@ function changeButtonOpacityToOne( color ) {
        }
        
        console.log( "changing opacity back to one." );
-} 
+}
+
+function compareUserSequenceToComputerSequence () {
+    var count = 0;
+    var len = gameState.computerSequence;
+    var userChoicesCorrect = true;
+    for( count; count < len; count++ ){
+        if( gameState.computerSequence[count] !== gameState.userSequence[count] ) {
+             return false;
+        }
+    }
+    return userChoicesCorrect;
+}
 
 function strictButtonHandler ( event ) {
     event.preventDefault();
